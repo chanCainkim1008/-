@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+
+  <style>
+    main {
+      background: #f2f4f7;
+      min-height: 700px;
+    }
+
+    .main-container {
+      width: 1080px;
+      margin: auto;
+      display: grid;
+      grid-template-columns: 250px 300px;
+      grid-template-rows: 200px 200px;
+      gap: 250px;
+      justify-content: center;
+      align-items: center;
+
+    }
+
+
+    .temp-box {
+      background: grey;
+      width: 100%;
+      padding: 10px;
+      font-size: 18px;
+      border: 1px solid #dee3eb;
+      text-align: left;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      transition: transform 0.3s;
+    }
+
+
+    .box-image {
+      width: 250px;
+      /* 이미지가 가로폭에 맞게 설정됨 */
+      height: 200px;
+      /* 세로 비율에 맞게 조절됨 */
+      border-radius: 5px;
+    }
+    
+    .box-title {
+      font-size: 24px;
+      margin: 10px 0;
+      color: #333;
+    }
+
+
+    .box-avg,
+    .box-rbi,
+    .box-war {
+      font-size: 18px;
+      color: #333;
+    }
+  </style>
+  <script>
+    $(document).ready(function () {
+      listing();
+    });
+
+    function listing() {
+      fetch('/').then((res) => res.json()).then((data) => {
+        let rows = data['result']
+        $('#cards-box').empty()
+        rows.forEach((a) => {
+          let image = a['image']
+          let name = a['name']
+          let avg = a['avg']
+          let rbi = a['rbi']
+          let war = a['war']
+
+          let temp_html = `<div class="temp-box">
+                          <img class="box-image"
+                          src="${image}">
+                          </div>
+                          <div class="temp-box">
+                          <h5 class="box-title">${name}</h5>
+                          <p class="box-avg">타율 : ${avg} </p>
+                          <p class="box-rbi">타점 : ${rbi}</p>
+                          <p class="box-war">WAR : ${war}</p>
+                          </div>`
+          $('#cards-box').append(temp_html)
+        })
+      })
+    }
+
+  </script>
+</head>
+
+<body>
+  <main>
+    <div class="main-container">
+        <div class="temp-box" id="cards-box">
+          <img class="box-image"
+            src="https://lgcxydabfbch3774324.cdn.ntruss.com/KBO_IMAGE/person/middle/2023/62404.jpg">
+        </div>
+        <div class="temp-box" id="cards-box">
+          <h5 class="box-title">이승엽(1루수)</h5>
+          <p class="box-avg">타율 : 0.302 </p>
+          <p class="box-rbi">타점 : 131</p>
+          <p class="box-war">WAR : 5.3</p>
+        </div>
+      </class>
+        <div class="temp-box">
+          <img class="box-image"
+            src="https://img4.daumcdn.net/thumb/R658x0.q70/?fname=https://t1.daumcdn.net/news/202210/14/sportskhan/20221014162606248qevf.jpg">
+        </div>
+        <div class="temp-box">
+          <h5 class="box-title">이승엽(1루수)</h5>
+          <p class="box-avg">타율 : 0.302 </p>
+          <p class="box-rbi">타점 : 131</p>
+          <p class="box-war">WAR : 5.3</p>
+        </div>
+    </div>
+  </main>
+</body>
+
+
+</html>
