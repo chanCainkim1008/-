@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+    crossorigin="anonymous"></script>
+  <script src="https://code.jquery.com/jquery-3.4.1.js"></script>></script>
+
+
+
+  <title>MoneyBALL</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Gowun+Dodum&display=swap');
+
+    * {
+      font-family: 'Gowun Dodum', sans-serif;
+
+    }
+
+    .search {
+
+      width: 1100px;
+      margin: 500px auto 100px auto;
+      display: flex;
+      flex-direction: row;
+
+      align-items: center;
+      justify-content: center;
+
+      background-image: linear-gradient(0deg, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('https://media.licdn.com/dms/image/C4E12AQGIhskgrmB6sw/article-cover_image-shrink_720_1280/0/1620804776276?e=2147483647&v=beta&t=YbaAt4XwGvLuBAnOjp4pHkGCNMdA9kIbA724OH6Xl5A');
+      background-position: center;
+      background-size: cover;
+      height: 300px;
+
+
+    }
+
+    .input {
+      width: 900px;
+      height: 40px;
+      margin-right: 2px;
+
+    }
+
+    .btn {
+      background-color: transparent;
+      height: 40px;
+      color: red;
+      border: 1px solid blue;
+
+
+    }
+
+    .btn:hover {
+      border: 2px solid skyblue;
+      color: blue;
+    }
+
+    main {
+      background: #f2f4f7;
+      min-height: 700px;
+    }
+
+    .main-container {
+      width: 1080px;
+      margin: auto;
+      display: grid;
+      grid-template-columns: 250px 300px;
+      grid-template-rows: 200px 200px;
+      gap: 250px;
+      justify-content: center;
+      align-items: center;
+
+    }
+
+
+    .temp-box {
+      background: grey;
+      width: 100%;
+      padding: 10px;
+      font-size: 18px;
+      border: 1px solid #dee3eb;
+      text-align: left;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      transition: transform 0.3s;
+
+    }
+
+
+    .box-image {
+      width: 100%;
+      /* 이미지가 가로폭에 맞게 설정됨 */
+      height: 200px;
+      /* 세로 비율에 맞게 조절됨 */
+      border-radius: 5px;
+
+    }
+
+    .box-title {
+      font-size: 24px;
+      margin: 10px 0;
+      color: #333;
+    }
+
+
+    .box-avg,
+    .box-rbi,
+    .box-war {
+      font-size: 18px;
+      color: #333;
+    }
+  </style>
+  <script>
+    // $(function () {
+    //     $("#search").autocomplete({
+    //         source: List,
+    //         focus: function (event, ui) {
+    //             return false;
+    //         },
+    //         minLength: 1,
+    //         delay: 100,
+    //     });
+    // });
+    function enterkey() {
+      if (window.event.keyCode == 13) {
+
+        // 엔터키로 검색 기능 구현
+        $("#form").submit();
+      }
+    }
+    $(document).ready(function () {
+      show_baseball();
+    });
+    function show_baseball() {
+      fetch('/player').then((res) => res.json()).then((data) => {
+        let rows = data['hitter_list']
+        let rows2 = data['pitcher_list']
+        $('#base_players').empty()
+
+        let temp_html = '';
+
+        rows.forEach((a) => {
+          let name = a['name']
+          let position = a['position']
+          let bat_average = a['타율']
+          let WAR = a['WAR']
+
+          temp_html == `<div class="main-container">
+                                            <div class="temp-box" id="base_players">    
+                                            </div>
+                                            <div class="temp-box" id="base_players">
+                                                <h5 class="box-title">${name}(${position})</h5>
+                                                <p class="box-avg">${bat_average}</p>
+                                                <p class="box-rbi">${WAR}</p>
+                                            </div>`
+          $('#base_players').append(temp_html);
+        })
+        rows2.forEach((b) => {
+          let name = b['이름']
+          let position = b['position']
+          let image = b['image']
+          let ERA = b['ERA']
+          let WAR = b['WAR']
+
+          temp_html ==  `<div class="main-container">
+                                            <div class="temp-box" id="base_players">
+                                            </div>
+                                            <div class="temp-box" id="base_players">
+                                                <h5 class="box-title">${name}(${position})</h5>
+                                                <p class="box-avg">$${ERA}</p>
+                                                <p class="box-rbi">${WAR}</p>
+                                            </div>`
+        })
+        $('#base_players').append(temp_html);
+        
+      })
+    }
+
+
+  </script>
+</head>
+
+<body>
+
+  <div class="search">
+    <input type="text" id="search" class="input" placeholder="선수를 입력하세요!" />
+    <button onclick="show_baseball()" id="form" class="btn" type="button" onkeyup="enterkey()">검색</button>
+  </div>
+  <div class="main-container">
+    <div class="temp-box" id="base_players">
+      <h5 class="box-title"></h5>
+      <p class="box-avg"> </p>
+      <p class="box-war"></p>
+    </div>
+</body>
+
+</html>
