@@ -13,24 +13,28 @@
         integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
         crossorigin="anonymous"></script>
 
-    <link href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&display=swap" rel="stylesheet" />
+    <title>이정후 팬클럽 WITH HOO</title>
 
-    <title>인생 버킷리스트</title>
+    <meta property="og:title" content="이정후!" />
+    <meta property="og:description" content="정후에게 응원 부탁드려요" />
+    <meta property="og:image" content="https://mblogthumb-phinf.pstatic.net/MjAyMDA1MTRfMTky/MDAxNTg5MzkzNDMxMzIz.tWQhi4qP0xZZXjFgp67Jjzah2n3nTvTuqbEIAw7ihScg.UEVJfv3pgipruOPPKvWQ9pDwE3I5u8egviWj1VnelcIg.JPEG.b97351/%EC%9D%B4%EC%A0%95%ED%9B%84.jpg?type=w800" />
 
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@200;300;400;500;600;700;900&display=swap"
+        rel="stylesheet" />
     <style>
         * {
-            font-family: "Gowun Dodum", sans-serif;
+            font-family: "Noto Serif KR", serif;
         }
 
         .mypic {
             width: 100%;
-            height: 200px;
+            height: 300px;
 
             background-image: linear-gradient(0deg,
                     rgba(0, 0, 0, 0.5),
                     rgba(0, 0, 0, 0.5)),
-                url("https://images.unsplash.com/photo-1601024445121-e5b82f020549?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1189&q=80");
-            background-position: center;
+                url("https://www.ikbc.co.kr/data/kbc/image/2023/01/20/kbc202301200091.800x.9.jpg");
+            background-position: center 30%;
             background-size: cover;
 
             color: white;
@@ -41,121 +45,122 @@
             justify-content: center;
         }
 
-        .mypic>h1 {
-            font-size: 30px;
-        }
-
-        .mybox {
+        .mypost {
             width: 95%;
-            max-width: 700px;
+            max-width: 500px;
+            margin: 20px auto 20px auto;
+
+            box-shadow: 0px 0px 3px 0px black;
             padding: 20px;
-            box-shadow: 0px 0px 10px 0px lightblue;
-            margin: 20px auto;
         }
 
-        .mybucket {
-            display: flex;
-            flex-direction: row;
-            align-items: center;
-            justify-content: space-between;
+        .mypost>button {
+            margin-top: 15px;
         }
 
-        .mybucket>input {
-            width: 70%;
+        .mycards {
+            width: 95%;
+            max-width: 500px;
+            margin: auto;
         }
 
-        .mybox>li {
-            display: flex;
-            flex-direction: row;
-            align-items: center;
-            justify-content: center;
-
+        .mycards>.card {
+            margin-top: 10px;
             margin-bottom: 10px;
-            min-height: 48px;
         }
-
-        .mybox>li>h2 {
-            max-width: 75%;
-            font-size: 20px;
-            font-weight: 500;
-            margin-right: auto;
-            margin-bottom: 0px;
-        }
+      
     </style>
     <script>
         $(document).ready(function () {
-            show_bucket();
+            set_temp();
+            show_comment();
         });
-        function show_bucket(){
-            $.ajax({
-                type: "GET",
-                url: "/bucket",
-                data: {},
-                success: function (response) {
-                    let rows = response['buckets']
-                    $('#bucket-list').empty()
-                    for (let i=0; i<rows.length; i++) {
-                        let bucket = rows[i]['bucket']
-                        let num = rows[i]['num']
-                        let done = rows[i]['done']
-                        let temp_html =``
-                        if(done==0) {
-                            temp_html=`<li>
-                                            <h2>✅ ${bucket}</h2>
-                                            <button onclick="done_bucket(${num})" type="button" class="btn btn-outline-primary">완료!</button>
-                                        </li>`
-                        } else {
-                            temp_html = `<li>
-                                            <h2 class="done">✅ 완료!!</h2>
-                                        </li>`
-                        }
-                        $('#bucket-list').append(temp_html)
-                    }
-                }
+        function set_temp() {
+            fetch("http://spartacodingclub.shop/sparta_api/weather/seoul").then((res) => res.json()).then((data) => {
+                let temp = data['temp']
+                $('#temp').text(temp)
             });
         }
-        function done_bucket(num){
-            $.ajax({
-                type: "POST",
-                url: "/bucket/done",
-                data: {num_give:num},
-                success: function (response) {
-                    alert(response["msg"])
-                    window.location.reload()
-                }
-            });
-        }
+        function save_comment() {
+            let name = $('#name').val()
+            let comment = $('#comment').val()
 
-        function save_bucket(){
-            let bucket = $('#bucket').val()
-            $.ajax({
-                type: "POST",
-                url: "/bucket",
-                data: {bucket_give:bucket},
-                success: function (response) {
-                    alert(response["msg"])
-                    window.location.reload()
-                }
+            let formData = new FormData();
+            formData.append("name_give", name);
+            formData.append("comment_give", comment);
+
+            fetch('/guestbooks', { method: "POST", body: formData, }).then((res) => res.json()).then((data) => {
+                alert(data["msg"]);
+                window.location.reload()
             });
         }
+        function show_comment() {
+            fetch('/guestbooks').then((res) => res.json()).then((data) => {
+                let rows = data['result']
+                $('#comment-list').empty()
+                rows.forEach((a) => {
+                    let name = a['name']
+                    let comment = a['comment']
 
+                    let temp_html = ` <div class="card">
+                                        <div class="card-body">
+                                            <blockquote class="blockquote mb-0">
+                                                <footer class="blockquote-footer">${name}</footer>
+                                                <p>${comment}</p>
+                                            </blockquote>
+                                        </div>
+                                    </div>`
+                    $('#comment-list').append(temp_html)
+                })
+            })
+        }
     </script>
 </head>
 
 <body>
     <div class="mypic">
-        <h1>나의 버킷리스트</h1>
+        <h1>이정후 사랑해요🩷</h1>
+        <p>현재기온: <span id="temp">36</span>도</p>
     </div>
-    <div class="mybox">
-        <div class="mybucket">
-            <input id="bucket" class="form-control" type="text" placeholder="이루고 싶은 것을 입력하세요" />
-            <button onclick="save_bucket()" type="button" class="btn btn-outline-primary">기록하기</button>
+    <div class="mypost">
+        <div class="form-floating mb-3">
+            <input type="text" class="form-control" id="name" placeholder="url" />
+            <label for="floatingInput">닉네임</label>
         </div>
+        <div class="form-floating">
+            <textarea class="form-control" placeholder="Leave a comment here" id="comment"
+                style="height: 100px"></textarea>
+            <label for="floatingTextarea2">응원댓글</label>
+        </div>
+        <button onclick="save_comment()" type="button" class="btn btn-dark">
+            댓글 남기기
+        </button>
     </div>
-    <div class="mybox" id="bucket-list">
-        <li>
-            <h2>✅ 호주에서 스카이다이빙 하기</h2> 
-        </li>
+    <div class="mycards" id="comment-list">
+        <div class="card">
+            <div class="card-body">
+                <blockquote class="blockquote mb-0">
+                    <p>곧 메이저리그 가겠다!</p>
+                    <footer class="blockquote-footer">이승엽</footer>
+                </blockquote>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-body">
+                <blockquote class="blockquote mb-0">
+                    <p>넌 너무 잘 생겼어!</p>
+                    <footer class="blockquote-footer">박찬호</footer>
+                </blockquote>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-body">
+                <blockquote class="blockquote mb-0">
+                    <p>팬이에요!</p>
+                    <footer class="blockquote-footer">김연경</footer>
+                </blockquote>
+            </div>
+        </div>
     </div>
 </body>
 
