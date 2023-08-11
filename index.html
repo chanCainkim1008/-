@@ -1,224 +1,162 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous" />
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
         crossorigin="anonymous"></script>
 
-    <title>Money Ball</title>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Gowun+Dodum&display=swap');
+    <link href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&display=swap" rel="stylesheet" />
 
+    <title>인생 버킷리스트</title>
+
+    <style>
         * {
-            font-family: 'Gowun Dodum', sans-serif;
+            font-family: "Gowun Dodum", sans-serif;
         }
 
-        .mytitle {
-            height: 250px;
-            background-image: linear-gradient(0deg, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('https://media.licdn.com/dms/image/C4E12AQGIhskgrmB6sw/article-cover_image-shrink_720_1280/0/1620804776276?e=2147483647&v=beta&t=YbaAt4XwGvLuBAnOjp4pHkGCNMdA9kIbA724OH6Xl5A');
+        .mypic {
+            width: 100%;
+            height: 200px;
+
+            background-image: linear-gradient(0deg,
+                    rgba(0, 0, 0, 0.5),
+                    rgba(0, 0, 0, 0.5)),
+                url("https://images.unsplash.com/photo-1601024445121-e5b82f020549?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1189&q=80");
             background-position: center;
             background-size: cover;
-        }
 
+            color: white;
 
-        .mycards {
-            width: 1200px;
-            margin: 20px auto 20px auto;
-        }
-
-        .mypost {
-            width: 500px;
-            margin: 20px auto 20px auto;
-            padding: 20px 20px 20px 20px;
-
-            box-shadow: 0px 0px 3px 0px gray;
-        }
-
-        .des {
-            font-size: 30px;
-            font-weight: bold;
-            text-align: center;
-            width: 500px;
-        }
-
-        .card-img-top-player {
-            width: 300px;
-        }
-
-        #copy {
-            text-align: right;
-            font-weight: bold;
-            margin: 10px 10px 10px auto;
-        }
-
-        button {
-            text-align: right;
-            border: none;
-            background-color: white;
-        }
-        button :hover{
-            color: transparent;
-        }
-
-        p {
-            font-weight: bold;
-            text-align: center;
-            font-size: 30px;
-        }
-
-        #images {
-            background-size: cover;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
             justify-content: center;
-            text-align: center;
-            margin-left: 120px;
         }
-        
+
+        .mypic>h1 {
+            font-size: 30px;
+        }
+
+        .mybox {
+            width: 95%;
+            max-width: 700px;
+            padding: 20px;
+            box-shadow: 0px 0px 10px 0px lightblue;
+            margin: 20px auto;
+        }
+
+        .mybucket {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .mybucket>input {
+            width: 70%;
+        }
+
+        .mybox>li {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: center;
+
+            margin-bottom: 10px;
+            min-height: 48px;
+        }
+
+        .mybox>li>h2 {
+            max-width: 75%;
+            font-size: 20px;
+            font-weight: 500;
+            margin-right: auto;
+            margin-bottom: 0px;
+        }
     </style>
     <script>
-          function save_heart() {
-            let formData = new FormData();
-            formData.append("sample_give", "샘플데이터");
-
-            fetch('/guestbook', { method: "POST", body: formData, }).then((res) => res.json()).then((data) => {
-                alert(data["msg"]);
+        $(document).ready(function () {
+            show_bucket();
+        });
+        function show_bucket(){
+            $.ajax({
+                type: "GET",
+                url: "/bucket",
+                data: {},
+                success: function (response) {
+                    let rows = response['buckets']
+                    $('#bucket-list').empty()
+                    for (let i=0; i<rows.length; i++) {
+                        let bucket = rows[i]['bucket']
+                        let num = rows[i]['num']
+                        let done = rows[i]['done']
+                        let temp_html =``
+                        if(done==0) {
+                            temp_html=`<li>
+                                            <h2>✅ ${bucket}</h2>
+                                            <button onclick="done_bucket(${num})" type="button" class="btn btn-outline-primary">완료!</button>
+                                        </li>`
+                        } else {
+                            temp_html = `<li>
+                                            <h2 class="done">✅ 완료!!</h2>
+                                        </li>`
+                        }
+                        $('#bucket-list').append(temp_html)
+                    }
+                }
+            });
+        }
+        function done_bucket(num){
+            $.ajax({
+                type: "POST",
+                url: "/bucket/done",
+                data: {num_give:num},
+                success: function (response) {
+                    alert(response["msg"])
+                    window.location.reload()
+                }
             });
         }
 
-        function show_heart() {
-            fetch('/guestbook').then((res) => res.json()).then((data) => {
-                alert(data["msg"])
-            })
+        function save_bucket(){
+            let bucket = $('#bucket').val()
+            $.ajax({
+                type: "POST",
+                url: "/bucket",
+                data: {bucket_give:bucket},
+                success: function (response) {
+                    alert(response["msg"])
+                    window.location.reload()
+                }
+            });
         }
+
     </script>
 </head>
 
 <body>
-    <div class="mytitle">
+    <div class="mypic">
+        <h1>나의 버킷리스트</h1>
     </div>
-    <div class="mypost">
-        <div class="form-floating mb-3">
-            <input type="text" class="form-control" id="floatingInput" placeholder="player"">
-            <label for=" floatingInput">Search for....</label>
-        </div>
-
-
-    </div>
-    <div class="mycards">
-        <div class="row row-cols-1 row-cols-md-5 g-2">
-            <div class="col">
-                <div class="card h-100">
-                    <img src="https://upload.wikimedia.org/wikipedia/en/e/e0/Kia_Tigers_2017_New_Team_Logo.png"
-                        class="card-img-top" alt="...">
-                        <button onclick="save_heart()" type="button">🩷</button>
-
-                </div>
-            </div>
-            <div class="col">
-                <div class="card h-100">
-                    <img src="https://upload.wikimedia.org/wikipedia/en/thumb/9/98/Doosan_Bears.svg/1200px-Doosan_Bears.svg.png"
-                        class="card-img-top" alt="...">
-                        <button onclick="save_heart()" type="button">🩷</button>
-                </div>
-            </div>
-            <div class="col">
-                <div class="card h-100">
-                    <img src="https://upload.wikimedia.org/wikipedia/en/thumb/d/d3/Hanwha_Eagles.svg/1200px-Hanwha_Eagles.svg.png"
-                        class="card-img-top" alt="...">
-                        <button onclick="save_heart()" type="button">🩷</button>
-                </div>
-            </div>
-            <div class="col">
-                <div class="card h-100">
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/4/41/LG_Twins_2017.png"
-                        class="card-img-top" alt="...">
-                        <button onclick="save_heart()" type="button">🩷</button>
-                </div>
-            </div>
-            <div class="col">
-                <div class="card h-100">
-                    <img src="https://upload.wikimedia.org/wikipedia/en/5/54/NC_Dinos_Emblem.svg" class="card-img-top"
-                        alt="...">
-                    <button onclick="save_heart()" type="button">🩷</button>
-                </div>
-            </div>
-            <div class="col">
-                <div class="card h-100">
-                    <img src="https://upload.wikimedia.org/wikipedia/en/4/4f/Kiwoom_Heroes.png" class="card-img-top"
-                        alt="...">
-                    <button onclick="save_heart()" type="button">🩷</button>
-                </div>
-            </div>
-            <div class="col">
-                <div class="card h-100">
-                    <img src="https://upload.wikimedia.org/wikipedia/en/thumb/0/0e/Samsung_Lions.svg/1200px-Samsung_Lions.svg.png"
-                        class="card-img-top" alt="...">
-                    <button onclick="save_heart()" type="button">🩷</button>
-                </div>
-            </div>
-            <div class="col">
-                <div class="card h-100">
-                    <img src="https://upload.wikimedia.org/wikipedia/en/thumb/e/e5/KT_Wiz.svg/1200px-KT_Wiz.svg.png"
-                        class="card-img-top" alt="...">
-                    <button onclick="save_heart()" type="button">🩷</button>
-                </div>
-            </div>
-            <div class="col">
-                <div class="card h-100">
-                    <img src="https://upload.wikimedia.org/wikipedia/en/8/86/SSG_Landers.png" class="card-img-top"
-                        alt="...">
-                    <button onclick="save_haert()" type="button">🩷</button>
-                </div>
-            </div>
-            <div class="col">
-                <div class="card h-100">
-                    <img src="https://upload.wikimedia.org/wikipedia/en/thumb/6/65/Lotte_Giants.svg/800px-Lotte_Giants.svg.png"
-                        class="card-img-top" alt="...">
-                        <button onclick="save_heart()" type="button">🩷</button>
-                </div>
-            </div>
+    <div class="mybox">
+        <div class="mybucket">
+            <input id="bucket" class="form-control" type="text" placeholder="이루고 싶은 것을 입력하세요" />
+            <button onclick="save_bucket()" type="button" class="btn btn-outline-primary">기록하기</button>
         </div>
     </div>
-
-    <div class="mycard">
-        <div class="row row-cols-1 row-cols-md-2 g-2">
-
-            <div class="col">
-                <div class="card h-100-img">
-                    <img src="https://img.mlbstatic.com/mlb-photos/image/upload/d_people:generic:headshot:67:current.png/w_213,q_auto:best/v1/people/660365/headshot/67/current"
-                        class="card-img-top-player" id="images" height="300px" alt="kia">
-                </div>
-            </div>
-            <div class="col">
-                <div class="Description">
-                    <p class="play-char">Yang Hyun Jong (투수)</p>
-                    <p class="play-team">소속: KIA TIGERS</p>
-                    <p class="play-recording">W: 164 L: 108 </p>
-                    <p class="play-era">ERA: 3.84</p>
-                    <p class="play-in">Inning: 2262</p>
-
-                </div>
-            </div>
-        </div>
+    <div class="mybox" id="bucket-list">
+        <li>
+            <h2>✅ 호주에서 스카이다이빙 하기</h2> 
+        </li>
     </div>
-
-    <footer id="copy">Copyright ©</footer>
-</body>
-
-</html>
-
-
-
-
-
-
-
 </body>
 
 </html>
